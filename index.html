@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Portal</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=1.2">
+</head>
+<body>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class_name="toggle-btn" id="toggle-btn">
+                <span class="material-icons">menu</span>
+            </button>
+            <span class="logo-text">Scheduler</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="nav-link" data-page="page-batch-request">Batch Request Form</a></li>
+            <li><a href="#" class="nav-link" data-page="page-generate-schedule">Generate Schedule</a></li>
+            <li><a href="#" class="nav-link" data-page="page-view-schedule">View Schedule</a></li>
+            <li><a href="#" class="nav-link" data-page="page-change-request">Change Request</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <span id="user-info">Not Logged In</span>
+            <a href="#" id="logout-btn">Logout</a>
+        </div>
+    </nav>
+
+    <main class="content" id="content">
+
+        <div id="page-login" class="page active">
+            <h1>Welcome to the Scheduling Portal</h1>
+            <p>Please log in to continue.</p>
+            <button id="login-btn">Log In (Test as Branch A)</button>
+        </div>
+
+        <div id="page-batch-request" class="page">
+            <h2>Batch Request Form</h2>
+            <p>This will open the Google Form in a new tab.</p>
+        </div>
+
+        <div id="page-generate-schedule" class="page">
+    <h2>Generate Schedule</h2>
+    <p>Use this form to add a new class to the schedule.</p>
+
+    <form id="schedule-form" class="form-layout">
+        <div class="form-group">
+            <label for="form-date">1. Select Date:</label>
+            <input type="date" id="form-date" required>
+        </div>
+
+        <div class="form-group">
+            <label for="form-batch">2. Select Batch:</label>
+            <select id="form-batch" required>
+                <option value="">-- Loading batches --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="form-shift">3. Select Shift/Time:</label>
+            <select id="form-shift" required disabled>
+                <option value="">-- Select a batch first --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="form-faculty">4. Select Faculty:</label>
+            <select id="form-faculty" required>
+                <option value="">-- Loading faculty --</option>
+            </select>
+        </div>
+
+        <button type="submit" id="form-submit-btn">Submit Class</button>
+
+        <div id="form-status" class="form-status-message"></div>
+    </form>
+</div>
+
+        <div id="page-view-schedule" class="page">
+            <h2>View Schedule</h2>
+            <p>Filters and a table of the schedule will go here...</p>
+        </div>
+        
+        <div id="page-change-request" class="page">
+            <h2>Change Request</h2>
+            <p>Change request form will go here...</p>
+        </div>
+
+    </main>
+
+    <script src="config.js"></script> <script src="script.js?v=1.2"></script> </body>
+</html>
