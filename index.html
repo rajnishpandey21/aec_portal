@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Portal</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="style.css?v=1.4"> 
+</head>
+<body>
+
+    <div id="login-container">
+        <div class="quote">
+            <p id="login-quote-text">“The only way to do <strong>great work</strong> is to <strong>love</strong> what you do”</p>
+        </div>
+        
+        <div class="login-actions">
+            <img src="logo.png" alt="Govt Exam Wallah Logo" class="login-logo">
+            <div id="google-signin-wrapper">
+                <div id="g_id_onload"
+                     data-client_id="341080038499-8u5pkuog0fa4nma52so00jh8f0oqstpl.apps.googleusercontent.com"
+                     data-callback="handleGoogleLogin"
+                     data-auto_select="true">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="pill"
+                     data-theme="outline"
+                     data-text="sign_in_with"
+                     data-size="Medium" data-logo_alignment="left">
+                </div>
+                <div id="login-status" class="form-status-message" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container" style="display: none;">
+        
+        <nav class="top-nav">
+            <div class="logo">
+                <img src="logo.png" alt="AEC Portal Logo">
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link active" data-page="page-analysis">Analysis</a>
+                <a href="https://script.google.com/a/macros/pw.live/s/AKfycbwhsF_ZIsTH6RNKdpxa3Q-R3A0vPLd7mKVjdJRAoWa-DXVbHVNh9DwznpC5zV9bQLvL/exec" class="nav-link" data-page="page-batch-request" target="_blank">Batch Request Form</a>
+                <a href="#" class="nav-link" data-page="page-generate-schedule">Generate Schedule</a>
+                <a href="#" class="nav-link" data-page="page-view-schedule">View Schedule</a>
+                <a href="#" class="nav-link" data-page="page-hall-timeline">Hall Timeline</a>
+                <a href="#" class="nav-link" data-page="page-change-request">Change Request</a>
+                <a href="#" class="nav-link" data-page="page-batches-analysis">Batches Analysis</a>
+                <a href="#" class="nav-link" data-page="page-special-lecture">Special Lectures</a>
+                <a href="#" id="nav-approve-link" class="nav-link admin-only" data-page="page-approve-requests" style="display: none; border: 1px solid #dc2626;">Approve Requests</a>
+            </div>
+
+            <div id="admin-controls" class="admin-only" style="display: none;">
+                <select id="admin-branch-switcher">
+                    <option value="">-- Select a Branch --</option>
+                </select>
+            </div>
+            <div class="user-profile">
+                <span id="user-info">Not Logged In</span>
+                <a href="#" id="logout-btn">Logout</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+
+            <div id="page-login" class="page">
+                <h1>Welcome</h1>
+                <p>You are logged in.</p>
+            </div>
+
+            <div id="page-analysis" class="page active">
+                <div class="dashboard-card dashboard-header">
+                    <h2>Analysis Dashboard</h2>
+                    <p>A high-level overview of your branch's performance.</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="filter-bar">
+                        <div class="form-group">
+                            <label for="analysis-date-start">Start Date:</label>
+                            <input type="date" id="analysis-date-start">
+                        </div>
+                        <div class="form-group">
+                            <label for="analysis-date-end">End Date:</label>
+                            <input type="date" id="analysis-date-end">
+                        </div>
+                        <div class="form-group">
+                            <label for="analysis-batch">Batch:</label>
+                            <select id="analysis-batch">
+                                <option value="">All Batches</option>
+                                </select>
+                        </div>
+                        <button type="button" id="analysis-apply-btn">Apply Filters</button>
+                    </div>
+                    <div id="analysis-status" class="form-status-message" style="display: none;"></div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="kpi-grid">
+                        <div class="kpi-card" id="kpi-planned-classes-card">
+                            <div class="value" id="kpi-planned-classes">0</div>
+                            <div class="label">Planned Classes</div>
+                        </div>
+                        <div class="kpi-card" id="kpi-done-classes-card">
+                            <div class="value" id="kpi-done-classes">0</div>
+                            <div class="label">Done Classes</div>
+                        </div>
+                        <div class="kpi-card" id="kpi-fill-rate-card">
+                            <div class="value" id="kpi-fill-rate">0%</div>
+                            <div class="label">Fill Rate</div>
+                        </div>
+                        <div class="kpi-card" id="kpi-cancelled-classes-card">
+                            <div class="value" id="kpi-cancelled-classes">0</div>
+                            <div class="label">Cancelled Classes</div>
+                        </div>
+                        <div class="kpi-card" id="kpi-cancellation-rate-card">
+                            <div class="value" id="kpi-cancellation-rate">0%</div>
+                            <div class="label">Cancellation Rate</div>
+                        </div>
+                        <div class="kpi-card" id="kpi-substituted-classes-card">
+                            <div class="value" id="kpi-substituted-classes">0</div>
+                            <div class="label">Substituted Classes</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="kpi-grid kpi-grid-secondary">
+                         <div class="kpi-card">
+                            <div class="value" id="kpi-running-batches">0</div>
+                            <div class="label">Currently Running Batches</div>
+                        </div>
+                         <div class="kpi-card">
+                            <div class="value" id="kpi-total-batches">0</div>
+                            <div class="label">Total Batches Launched</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="value" id="kpi-total-changes">0</div>
+                            <div class="label">Total Changes Logged</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="value" id="kpi-total-special">0</div>
+                            <div class="label">Total Special Lectures</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="analysis-tables-grid">
+                        <div class="analysis-table-container">
+                            <h3>Batch Scheduled Till</h3>
+                            <div id="analysis-pivot-table" class="analysis-table-wrapper">
+                                </div>
+                        </div>
+                        <div class="analysis-table-container">
+                            <h3>Most Utilized Faculty (Top 5)</h3>
+                            <div id="analysis-top-faculty" class="analysis-table-wrapper">
+                                </div>
+                        </div>
+                        <div class="analysis-table-container">
+                            <h3>Faculty With Most Cancellations (Top 5)</h3>
+                            <div id="analysis-cancel-faculty" class="analysis-table-wrapper">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div id="page-batch-request" class="page">
+                <div class="dashboard-card">
+                    <h2>Batch Request Form</h2>
+                    <p>This will open the Google Form in a new tab.</p>
+                </div>
+            </div>
+
+            <div id="page-generate-schedule" class="page">
+                <div class="dashboard-card">
+                    <h2>Generate Schedule</h2>
+                    <p>Use this form to add a new class to the schedule.</p>
+
+                    <form id="schedule-form" class="form-layout">
+            <div class="form-group">
+                <label for="form-date">1. Select Date:</label>
+                <input type="date" id="form-date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="form-batch">2. Select Batch:</label>
+                <select id="form-batch" required>
+                    <option value="">-- Loading batches --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="form-shift">3. Select Shift/Time:</label>
+                <select id="form-shift" required disabled>
+                    <option value="">-- Select a batch first --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="form-faculty">4. Select Faculty:</label>
+                <select id="form-faculty" required>
+                    <option value="">-- Loading faculty --</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="flex-grow: 0.5; min-width: 150px;">
+                <label for="form-is-demo" style="opacity:0;">&nbsp;</label>
+                <div style="display: flex; align-items: center; height: 47px; padding-left: 5px;">
+                    <input type="checkbox" id="form-is-demo" style="width: 20px; height: 20px; margin-right: 10px;">
+                    <label for="form-is-demo" style="margin-bottom: 0; font-weight: normal; user-select: none; cursor: pointer;">Flag as "Demo" Class</label>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" id="form-add-row-btn">Add Row</button>
+                <button type="submit" id="form-submit-btn">Submit Class</button>
+            </div>
+
+            <div id="form-status" class="form-status-message"></div>
+                    </form>
+                </div>
+
+                <div id="queue-job-modal" class="simple-modal" style="display: none;">
+                    <h3>Generate Final Schedule</h3>
+                    <p>The class has been added. To update the 'FinalSchedule' sheet, you must queue the generation job.</p>
+                    <div id="queue-job-status" class="form-status-message"></div>
+                    <div class="modal-actions">
+                        <button type="button" id="queue-job-close-btn" class="button-secondary">Close</button>
+                        <button type="button" id="queue-job-run-btn">Queue Job</button>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div id="bulk-section" class="bulk-section">
+                        <div id="bulk-status" class="form-status-message"></div>
+                        <table id="pending-entries-table" class="pending-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Batch</th>
+                                    <th>Shift</th>
+                                    <th>Faculty</th>
+                                    <th>Type</th>
+                                    <th colspan="2">Status / Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+    <div id="page-view-schedule" class="page">
+        <div class="dashboard-card dashboard-header">
+            <h2>View Schedule</h2>
+            <p>View the generated schedule. Use the filters to narrow your results.</p>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="filter-bar">
+                <div class="filter-inputs">
+                    <div class="form-group">
+                        <label for="filter-date-start">Start Date:</label>
+                        <input type="date" id="filter-date-start">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-date-end">End Date:</label>
+                        <input type="date" id="filter-date-end">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-batch">Batch:</label>
+                        <select id="filter-batch">
+                            <option value="">All Batches</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-faculty">Faculty:</label>
+                        <select id="filter-faculty">
+                            <option value="">All Faculty</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-hall">Hall:</label>
+                        <select id="filter-hall">
+                            <option value="">All Halls</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="filter-actions">
+                    <button type="button" id="filter-reset-btn" class="button-secondary">Reset Filters</button>
+                    <button type="button" id="vs-mark-all" class="button-secondary">Mark All Visible as Done</button>
+                    <button type="button" id="vs-export-pdf" class="button-primary">Export as PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div id="schedule-view-container">
+            <div id="schedule-view-status" class="form-status-message loading" style="display: none;"></div>
+
+            <table id="schedule-view-table" class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Course</th>
+                        <th>Batch</th>
+                        <th>Hall</th>
+                        <th>Faculty</th>
+                        <th>Subject</th>
+                        <th>Topic</th>
+                        <th>Lec. Count</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="schedule-view-tbody">
+                    </tbody>
+            </table>
+            <div class="pagination-controls">
+                <div class="pagination-left">
+                    <button type="button" id="vs-prev">Prev 3 days</button>
+                </div>
+                <div class="pagination-center">
+                    <button type="button" id="vs-today" class="button-secondary">Today window</button>
+                    <span id="vs-window-label"></span>
+                </div>
+                <div class="pagination-right">
+                    <button type="button" id="vs-next">Next 3 days</button>
+                </div>
+            </div>
+            <div id="vs-modal" class="multi-menu" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); max-width:520px; width:90%; z-index:200;">
+                <h3>Update Class Status</h3>
+                <div style="margin:8px 0;">
+                    <label><input type="radio" name="vs-action" value="Done" checked> Done</label>
+                    <label style="margin-left:12px;"><input type="radio" name="vs-action" value="Cancelled"> Cancelled</label>
+                    <label style="margin-left:12px;"><input type="radio" name="vs-action" value="Substituted"> Substituted</label>
+                </div>
+                <div id="vs-cancel-fields" style="display:none;">
+                    <label>Reason:<input type="text" id="vs-reason" class="multi-search" placeholder="Reason"></label>
+                </div>
+                <div id="vs-sub-fields" style="display:none;">
+                    <label>Substitute Faculty:
+                        <select id="vs-sub-faculty" class="multi-search"></select>
+                    </label>
+                    <label>Substitute Subject:
+                        <input type="text" id="vs-sub-subject" class="multi-search" placeholder="Subject">
+                    </label>
+                    <label>Substitute Topic:
+                        <input type="text" id="vs-sub-topic" class="multi-search" placeholder="Topic">
+                    </label>
+                    <label>New Hall Number:
+                        <input type="text" id="vs-new-hall" class="multi-search" placeholder="e.g., 2">
+                    </label>
+                    <label>Reason:
+                        <input type="text" id="vs-sub-reason" class="multi-search" placeholder="Reason">
+                    </label>
+                </div>
+                <div class="multi-actions">
+                    <button type="button" id="vs-modal-cancel" class="button-secondary">Close</button>
+                    <button type="button" id="vs-modal-save">Save</button>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+            
+    <div id="page-batches-analysis" class="page">
+        <div class="dashboard-card dashboard-header">
+            <h2>Batches Analysis</h2>
+            <p>Shows each batch's most recent lecture and whether it's running or expired (no lecture in last 7 days).</p>
+        </div>
+        <div class="dashboard-card">
+            <div id="ba-status" class="form-status-message" style="display:none;"></div>
+            <table id="ba-table" class="pending-table">
+                <thead>
+                    <tr>
+                        <th>Batch</th>
+                        <th>Status</th>
+                        <th>Last Scheduled Lecture Date (As of Now)</th>
+                        <th>Total Lectures</th>
+                        <th>Planned</th>
+                        <th>Remaining</th>
+                    </tr>
+                </thead>
+                <tbody id="ba-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="page-special-lecture" class="page">
+        <div class="dashboard-card">
+            <h2>Special Lectures (Batch merge)</h2>
+            <p>Log combined classes conducted across multiple batches, step-by-step.</p>
+            <div class="sl-container">
+                <form id="sl-form" class="sl-card-stack">
+                    <div class="sl-card" data-step="1">
+                        <div class="form-group">
+                            <label for="sl-date">1. Lecture Date:</label>
+                            <input type="date" id="sl-date" required>
+                        </div>
+                        <button type="button" class="sl-next-btn" data-next="2">Next</button>
+                    </div>
+                    <div class="sl-card" data-step="2">
+                        <div class="form-group">
+                            <label for="sl-batches">2. Batches (Select all that apply):</label>
+                            <div id="sl-batch-multi" class="multi-select">
+                                <button type="button" id="sl-batch-trigger">Select batches</button>
+                                <div id="sl-batch-menu" class="multi-menu" style="display:none;">
+                                    <input type="text" id="sl-batch-search" placeholder="Search batches..." class="multi-search">
+                                    <div id="sl-batch-options" class="multi-options"></div>
+                                    <div class="multi-actions">
+                                        <button type="button" id="sl-batch-clear" class="button-secondary">Clear</button>
+                                        <button type="button" id="sl-batch-apply">Apply</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <select id="sl-batches" multiple size="6" required style="display:none"></select>
+                        </div>
+                        <button type="button" class="sl-next-btn" data-next="3">Next</button>
+                    </div>
+                    <div class="sl-card" data-step="3">
+                        <div class="form-group">
+                            <label for="sl-faculty">3. Faculty:</label>
+                            <select id="sl-faculty" required>
+                                <option value="">-- Loading faculty --</option>
+                            </select>
+                        </div>
+                        <button type="button" class="sl-next-btn" data-next="4">Next</button>
+                    </div>
+                    <div class="sl-card" data-step="4">
+                        <div class="form-group">
+                            <label for="sl-hall">4. Hall Number:</label>
+                            <input type="text" id="sl-hall" placeholder="e.g., 2" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sl-time">5. Lecture Time:</label>
+                            <input type="time" id="sl-time" required>
+                        </div>
+                        <button type="button" class="sl-next-btn" data-next="5">Next</button>
+                    </div>
+                    <div class="sl-card" data-step="5">
+                        <div class="form-group">
+                            <label for="sl-duration">6. Lecture Duration (hours):</label>
+                            <input type="number" id="sl-duration" min="0.5" step="0.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sl-topic">7. Lecture Topic:</label>
+                            <input type="text" id="sl-topic" placeholder="Topic" required>
+                        </div>
+                        <button type="button" class="sl-next-btn" data-next="6">Next</button>
+                    </div>
+                    <div class="sl-card" data-step="6">
+                        <div class="form-group">
+                            <label for="sl-payment">8. Payment:</label>
+                            <select id="sl-payment" required>
+                                <option value="Paid">Paid</option>
+                                <option value="Free">Free</option>
+                            </select>
+                        </div>
+                        <button type="button" class="sl-next-btn" data-next="7">Next</button>
+                    </div>
+                    <div class="sl-card" data-step="7">
+                        <div class="form-group">
+                            <label for="sl-reason">9. Reason for Special Class:</label>
+                            <input type="text" id="sl-reason" placeholder="e.g., Syllabus completion, Doubt session" required>
+                        </div>
+                        <button type="button" class="sl-next-btn" data-next="8">Review & Submit</button>
+                    </div>
+                    <div class="sl-card" data-step="8">
+                        <h3>All Set!</h3>
+                        <p>Please review your lecture details in the summary card to the right.</p>
+                        <button type="submit" id="sl-submit-btn">Log Special Lecture</button>
+                    </div>
+                    <input type="hidden" id="sl-courses">
+                    <input type="hidden" id="sl-expertise">
+                    <div id="sl-status" class="form-status-message"></div>
+                </form>
+                <div id="sl-summary-realtime" class="dashboard-card">
+                    <h3>Lecture Summary</h3>
+                    <div class="sl-summary-item">
+                        <span>Date:</span>
+                        <strong id="summary-sl-date">...</strong>
+                    </div>
+                    <div class="sl-summary-item">
+                        <span>Batches:</span>
+                        <strong id="summary-sl-batches">...</strong>
+                    </div>
+                    <div class="sl-summary-item">
+                        <span>Faculty:</span>
+                        <strong id="summary-sl-faculty">...</strong>
+                    </div>
+                    <div class="sl-summary-item">
+                        <span>Expertise:</span>
+                        <strong id="summary-sl-expertise">...</strong>
+                    </div>
+                    <div class="sl-summary-item">
+                        <span>Hall:</span>
+                        <strong id="summary-sl-hall">...</strong>
+                    </div>
+                    <div class="sl-summary-item">
+                        <span>Time:</span>
+                        <strong id="summary-sl-time">...</strong>
+                    </div>
+                    <div class="sl-summary-item">
+                        <span>Duration:</span>
+                        <strong id="summary-sl-duration">...</strong>
+                    </div>
+                    <div class="sl-summary-item">
+                        <span>Topic:</span>
+                        <strong id="summary-sl-topic">...</strong>
+                    </div>
+                    <div class="sl-summary-item">
+                        <span>Payment:</span>
+                        <strong id="summary-sl-payment">...</strong>
+                    </div>
+                    <div class="sl-summary-item">
+                        <span>Reason:</span>
+                        <strong id="summary-sl-reason">...</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+           <div id="page-change-request" class="page">
+                <div class="dashboard-card">
+                    <h2>Change Request</h2>
+                    <p>Complete each step. Your details will appear in the summary card.</p>
+                    <div class="cr-container">
+                        <form id="cr-form" class="cr-card-stack">
+                            <div class="cr-card" data-step="1">
+                                <div class="form-group">
+                                    <label for="cr-date">1. Select Date:</label>
+                                    <input type="date" id="cr-date" required>
+                                </div>
+                                <button type="button" class="cr-next-btn" data-next="2">Next</button>
+                            </div>
+                            <div class="cr-card" data-step="2">
+                                <div class="form-group">
+                                    <label for="cr-batch">2. Select Batch:</label>
+                                    <select id="cr-batch" required>
+                                        <option value="">-- Select a Batch --</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="cr-next-btn" data-next="3">Next</button>
+                            </div>
+                            <div class="cr-card" data-step="3">
+                                <div class="form-group">
+                                    <label for="cr-shift">3. Select Shift/Time:</label>
+                                    <select id="cr-shift" required disabled>
+                                        <option value="">-- Select a batch first --</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="cr-next-btn" data-next="4">Next</button>
+                            </div>
+                            <div class="cr-card" data-step="4">
+                                <div class="form-group">
+                                    <label for="cr-type">4. Select Change Type:</label>
+                                    <select id="cr-type" required>
+                                        <option value="">-- Select Change Type --</option>
+                                        <option value="HALL">Hall Changed</option>
+                                        <option value="DURATION">Duration Changed</option>
+                                        <option value="TEACHER">Teacher Changed</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="cr-next-btn" data-next="5">Next</button>
+                            </div>
+                            <div class="cr-card" data-step="5">
+                                <div class="form-group" id="cr-new-hall-group" style="display:none;">
+                                    <label for="cr-new-hall">5. New Hall:</label>
+                                    <input type="text" id="cr-new-hall" placeholder="e.g., H2">
+                                </div>
+                                <div class="form-group" id="cr-new-duration-group" style="display:none;">
+                                    <label for="cr-new-duration">5. New Duration (hours):</label>
+                                    <input type="number" id="cr-new-duration" min="0.5" step="0.5" placeholder="e.g., 1.5">
+                                </div>
+                                <div class="form-group" id="cr-new-faculty-group" style="display:none;">
+                                    <label for="cr-new-faculty">5. New Faculty:</label>
+                                    <select id="cr-new-faculty">
+                                        <option value="">-- Select a Faculty --</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="cr-next-btn" data-next="6">Next</button>
+                            </div>
+                            <div class="cr-card" data-step="6">
+                                <div class="form-group">
+                                    <label for="cr-remarks">6. Remarks (Optional):</label>
+                                    <input type="text" id="cr-remarks" placeholder="Optional notes">
+                                </div>
+                                <button type="button" class="cr-next-btn" data-next="7">Review & Submit</button>
+                            </div>
+                            <div class="cr-card" data-step="7">
+                                <h3>All Set!</h3>
+                                <p>Please review your changes in the summary card to the right.</p>
+                                <button type="submit" id="cr-submit-btn">Log Change Request</button>
+                            </div>
+                            <div id="cr-status" class="form-status-message"></div>
+                        </form>
+                        <div id="cr-summary-realtime" class="dashboard-card">
+                            <h3>Request Summary</h3>
+                            <div class="cr-summary-item">
+                                <span>Date:</span>
+                                <strong id="summary-date">...</strong>
+                            </div>
+                            <div class="cr-summary-item">
+                                <span>Batch:</span>
+                                <strong id="summary-batch">...</strong>
+                            </div>
+                            <div class="cr-summary-item">
+                                <span>Shift:</span>
+                                <strong id="summary-shift">...</strong>
+                            </div>
+                            <div class="cr-summary-item">
+                                <span>Change:</span>
+                                <strong id="summary-type">...</strong>
+                            </div>
+                            <div class="cr-summary-item">
+                                <span>New Value:</span>
+                                <strong id="summary-value">...</strong>
+                            </div>
+                            <div class="cr-summary-item">
+                                <span>Remarks:</span>
+                                <strong id="summary-remarks">...</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div id="page-hall-timeline" class="page">
+            <div class="dashboard-card dashboard-header">
+                <h2>Hall Timeline View</h2>
+                <p>A visual grid of scheduled classes by hall and time for a selected day.</p>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="filter-bar">
+                    <div class="form-group" style="flex: 1 1 200px;">
+                        <label for="timeline-date">Select Date:</label>
+                        <input type="date" id="timeline-date">
+                    </div>
+                    <div class="form-group" style="flex: 1 1 200px;">
+                        <label for="timeline-batch-filter">Filter by Batch:</label>
+                        <select id="timeline-batch-filter">
+                            <option value="">All Batches</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1 1 200px;">
+                        <label for="timeline-faculty-filter">Filter by Faculty:</label>
+                        <select id="timeline-faculty-filter">
+                            <option value="">All Faculty</option>
+                        </select>
+                    </div>
+                    <button type="button" id="timeline-refresh-btn" style="align-self: flex-end;">Load Timeline</button>
+                </div>
+                <div id="timeline-status" class="form-status-message" style="display: none;"></div>
+            </div>
+
+            <div class="dashboard-card">
+                <div id="timeline-container" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <p>Please select a date and click "Load Timeline" to see the schedule.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-approve-requests" class="page admin-only">
+            <div class="dashboard-card dashboard-header">
+                <h2>Approve Change Requests</h2>
+                <p>Approve or Reject pending change requests for the selected branch.</p>
+            </div>
+            <div class="dashboard-card">
+                <div id="ar-status" class="form-status-message" style="display:none;"></div>
+                <table id="ar-table" class="pending-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Batch</th>
+                            <th>Change</th>
+                            <th>New Value</th>
+                            <th>Remarks</th>
+                            <th>Requested By</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ar-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        </main>
+    </div> <script src="config.js?v=1.1"></script> 
+    <script src="script.js?v=1.4"></script> 
+</body>
+</html>
