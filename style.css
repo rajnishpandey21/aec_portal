@@ -327,6 +327,17 @@ button:disabled {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* ADD THIS NEW STYLE */
+.button-primary {
+    background-color: #2D3748; /* Use --theme-accent-dark */
+    color: #FFFFFF;
+}
+.button-primary:hover {
+    background-color: #1A202C;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 .filter-bar {
     display: flex;
     flex-wrap: nowrap; /* keep in a single row */
