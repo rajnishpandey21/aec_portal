@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule Portal</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="style.css?v=1.4"> 
 </head>
 <body>
@@ -294,6 +296,7 @@
                 <div class="filter-actions">
                     <button type="button" id="filter-reset-btn" class="button-secondary">Reset Filters</button>
                     <button type="button" id="vs-mark-all" class="button-secondary">Mark All Visible as Done</button>
+                    <button type="button" id="vs-export-pdf" class="button-primary">Export as PDF</button>
                 </div>
             </div>
         </div>
