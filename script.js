@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const vsMarkAll = document.getElementById('vs-mark-all');
     const vsWindowLabel = document.getElementById('vs-window-label');
     const vsModal = document.getElementById('vs-modal');
+    const vsExportPdf = document.getElementById('vs-export-pdf');
     const vsModalSave = document.getElementById('vs-modal-save');
     const vsModalCancel = document.getElementById('vs-modal-cancel');
     const vsCancelFields = document.getElementById('vs-cancel-fields');
@@ -2006,6 +2007,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (vsNext) vsNext.addEventListener('click', ()=>{ vsWindowOffset += 1; loadViewScheduleData(); });
     if (vsToday) vsToday.addEventListener('click', ()=>{ vsWindowOffset = 0; loadViewScheduleData(); });
 
+    /* ADD THIS NEW LISTENER */
+    if (vsExportPdf) {
+        vsExportPdf.addEventListener('click', exportScheduleToPDF);
+    }
+
     // Mark all visible as done
     if (vsMarkAll) vsMarkAll.addEventListener('click', async ()=>{
         // Get all VISIBLE (not filtered out) buttons
@@ -2595,6 +2601,138 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Error queuing approval: " + err.message);
             btn.disabled = false;
             btn.innerHTML = 'Approve';
+        }
+    }
+
+    /**
+     * NEW: Helper function to load an image and convert it to base64
+     * This is needed to embed the logo in the PDF.
+     */
+    async function getBase64Image(url) {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        } catch (e) {
+            console.error("Error loading image for PDF:", e);
+            return null;
+        }
+    }
+
+    /**
+     * NEW: Main function to generate and export the schedule as a PDF.
+     */
+    async function exportScheduleToPDF() {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert("Error: PDF library (jsPDF) is not loaded.");
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const btn = document.getElementById('vs-export-pdf');
+
+        // Show loading state
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Exporting...';
+        }
+
+        try {
+            // 1. Initialize jsPDF
+            // A3 is 420w x 297h mm. 'l' is landscape.
+            const doc = new jsPDF({
+                orientation: 'l',
+                unit: 'mm',
+                format: 'a3'
+            });
+
+            // 2. Load Logo
+            // Assumes logo.png is accessible at the root, matching index.html
+            const logoBase64 = await getBase64Image('logo.png'); 
+            if (logoBase64) {
+                // (w, h) - You may need to adjust these dimensions
+                doc.addImage(logoBase64, 'PNG', 15, 12, 60, 10); 
+            }
+
+            // 3. Add Header Text
+            doc.setFontSize(22);
+            doc.setFont('helvetica', 'bold');
+            doc.text("Classes Schedule", 85, 18); // (text, x, y)
+
+            // 4. Add Subtext (Date Range)
+            const dateStart = filterDateStart ? filterDateStart.value : "";
+            const dateEnd = filterDateEnd ? filterDateEnd.value : "";
+            let dateSubtext = `Date: ${dateStart}`;
+            if (dateStart && dateEnd && dateStart !== dateEnd) {
+                dateSubtext = `Date: ${dateStart} to ${dateEnd}`;
+            }
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text(dateSubtext, 85, 25);
+
+            // 5. Prepare Table Data
+            const headers = [
+                "Date", "Time", "Course", "Batch", "Hall", 
+                "Faculty", "Subject", "Topic"
+            ];
+
+            const body = [];
+            const tableRows = viewScheduleTbody ? viewScheduleTbody.querySelectorAll('tr:not(.hidden-filter)') : [];
+
+            tableRows.forEach(tr => {
+                const cells = tr.querySelectorAll('td');
+                if (cells.length < 8) return; // safety check
+
+                const rowData = [
+                    cells[0].textContent, // Date
+                    cells[1].textContent, // Time
+                    cells[2].textContent, // Course
+                    cells[3].textContent, // Batch
+                    cells[4].textContent, // Hall
+                    cells[5].textContent, // Faculty
+                    cells[6].textContent, // Subject
+                    cells[7].textContent, // Topic
+                ];
+                body.push(rowData);
+            });
+
+            // 6. Add Table to PDF
+            doc.autoTable({
+                head: [headers],
+                body: body,
+                startY: 35, // Y position to start the table (below headers)
+                theme: 'striped', // 'striped', 'grid', 'plain'
+                headStyles: {
+                    fillColor: [45, 55, 72], // --theme-accent-dark
+                    textColor: [255, 255, 255],
+                    fontSize: 10,
+                },
+                bodyStyles: {
+                    fontSize: 9,
+                },
+                alternateRowStyles: {
+                    fillColor: [249, 250, 251], // Light gray
+                },
+                margin: { left: 15, right: 15 },
+            });
+
+            // 7. Save the PDF
+            doc.save(`Schedule_${dateStart}_to_${dateEnd}.pdf`);
+
+        } catch (err) {
+            console.error("Error exporting PDF:", err);
+            alert("An error occurred while exporting the PDF.");
+        } finally {
+            // Restore button
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Export as PDF';
+            }
         }
     }
 
