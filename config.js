@@ -12,6 +12,26 @@ const BRANCHES = [
   { 
     name: "Delhi", 
     id: "1NnXtQy0_TZRM4c4FdcDLgdSfvl1ueVk71U5e9Vu2sWg" 
+  },
+  { 
+    name: "Indore", 
+    id: "1Ou5KcIAgF5KmIH4-K1fjzxH2ajIdH_F8c9HasERuutk" 
+  },
+  { 
+    name: "Kolkata", 
+    id: "19zn603aVer5qqL_heAFBiIDWRSrB9mvMB9BokPZakHc" 
+  },
+  {
+    name: "Lucknow",
+    id: "1kr2tDErGpn3Z-DNAuoA2lnI9j-HWDjOIjY3RzNtxUsg"
+  },
+  {
+    name: "Prayagraj",
+    id: "14OwSO6tUXGBb6yubuilMGF3SelhmsZ6lJXV0YR_f5zw"
+  },
+  {
+    name: "Varanasi",
+    id: "1R0LEd_pWEe1cy8GNe4MvZ-Ga2Bx5NVom-X4Zr4M6pr4"
   }
   // Add more branches here as needed
 ];
